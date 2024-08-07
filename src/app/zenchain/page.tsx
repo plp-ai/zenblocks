@@ -8,12 +8,47 @@ import { WavyBackground } from '@/components/ui/wavy-background';
 
 import Navbar from '../navbar';
 
-const CustomButton = ({ onClick, className, children }: { onClick: () => void; className: string; children: React.ReactNode }) => (
+const YinYangIcon = ({  onClick }) => (
+  <svg
+    width="128"
+    height="128"
+    viewBox="0 0 128 128"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`cursor-pointer transition-transform duration-300 hover:scale-110 `}
+    onClick={onClick}
+  >
+    <circle cx="64" cy="64" r="64" fill="url(#gradient)" />
+    <path
+      d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64 64-28.7 64-64S99.3 0 64 0zm0 121.6C32.2 121.6 6.4 95.8 6.4 64S32.2 6.4 64 6.4s57.6 25.8 57.6 57.6-25.8 57.6-57.6 57.6z"
+      fill="black"
+    />
+    <path
+      d="M64 6.4c-31.8 0-57.6 25.8-57.6 57.6S32.2 121.6 64 121.6V6.4z"
+      fill="black"
+    />
+    <circle cx="64" cy="32" r="16" fill="#9C27B0" />
+    <circle cx="64" cy="96" r="16" fill="black" />
+    <circle cx="64" cy="32" r="6.4" fill="white" />
+    <circle cx="64" cy="96" r="6.4" fill="#9C27B0" />
+    <defs>
+      <linearGradient id="gradient" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" />
+        <stop offset="1" stopColor="black" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+const ConnectWalletButton = ({ onClick, walletConnected }) => (
   <button
     onClick={onClick}
-    className={`w-full p-4 rounded-lg flex justify-between items-center transition-colors duration-200 ${className}`}
+    className={`absolute top-4 right-4 p-2 rounded-lg flex items-center transition-colors duration-200 ${
+      walletConnected ? 'bg-green-600 text-white' : 'bg-purple-900 hover:bg-purple-800 text-purple-100'
+    }`}
   >
-    {children}
+    <Wallet className="w-6 h-6 mr-2" />
+    <span>{walletConnected ? 'Connected' : 'Connect Wallet'}</span>
   </button>
 );
 
@@ -61,55 +96,29 @@ const LandingPage = () => {
       <Navbar />
       <main className="flex-grow relative overflow-hidden">
         <WavyBackground className="absolute inset-0">
-          <div className="relative z-10 flex items-center justify-center min-h-full py-4 px-4">
-            <div className="w-full max-w-4xl space-y-8">
-              <TracingBeam className="px-6">
-                <div className="space-y-8">
-                  <CustomButton 
-                    className="bg-purple-900 hover:bg-purple-800 text-purple-100"
-                    onClick={toggleRecording}
-                  >
-                    <div>
-                      <h3 className="text-lg font-semibold text-left">{isRecording ? "Stop Focusing" : "Start Focusing"}</h3>
-                      <p className="text-left">{isRecording ? "Click to end your focus session" : "Begin tracking your attention"}</p>
-                    </div>
-                    {isRecording ? <Zap className="w-6 h-6 flex-shrink-0" /> : <Camera className="w-6 h-6 flex-shrink-0" />}
-                  </CustomButton>
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-full py-4 px-4">
+            <ConnectWalletButton onClick={connectWallet} walletConnected={walletConnected} />
+            <div className="w-full max-w-4xl space-y-8 flex flex-col items-center">
+              <TracingBeam className="px-6 w-full">
+                <div className="space-y-8 flex flex-col items-center">
+                  <YinYangIcon isRecording={isRecording} onClick={toggleRecording} />
+                  <p className="text-white text-center">
+                    {isRecording ? "Click to end your focus session" : "Click to begin tracking your attention"}
+                  </p>
 
                   {isRecording && <WebcamComponent />}
 
                   {sessionEnded && claimableAU > 0 && (
-                    <CustomButton 
-                      className="bg-green-600 hover:bg-green-500 text-white"
+                    <button 
+                      className="bg-green-600 hover:bg-green-500 text-white p-4 rounded-lg flex items-center transition-colors duration-200"
                       onClick={claimAU}
                     >
-                      <div>
-                        <h3 className="text-lg font-semibold text-left">Claim {claimableAU} AU</h3>
-                        <p className="text-left">Great job focusing! Claim your earned Attention Units</p>
-                      </div>
-                      <Gift className="w-6 h-6 flex-shrink-0" />
-                    </CustomButton>
+                      <Gift className="w-6 h-6 mr-2" />
+                      <span>Claim AU</span>
+                    </button>
                   )}
 
-                  {!walletConnected && (
-                    <CustomButton 
-                      className="bg-purple-900 hover:bg-purple-800 text-purple-100"
-                      onClick={connectWallet}
-                    >
-                      <div>
-                        <h3 className="text-lg font-semibold text-left">Connect MetaMask</h3>
-                        <p className="text-left">Link your wallet to start earning</p>
-                      </div>
-                      <Wallet className="w-6 h-6 flex-shrink-0" />
-                    </CustomButton>
-                  )}
-
-                  {walletConnected && (
-                    <div className="bg-purple-900 border border-purple-400 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold text-purple-200">Wallet Connected!</h3>
-                      <p className="text-purple-300">Your MetaMask wallet is now linked. Attention Units will be transferred automatically.</p>
-                    </div>
-                  )}
+                 
                 </div>
               </TracingBeam>
             </div>
