@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Navbar from "./navbar";
 import { SparklesCore } from "@/components/ui/sparkles";
+import { ThirdwebProvider } from "thirdweb/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,10 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        
-          
-         
+        <ThirdwebProvider>
           {children}
+          </ThirdwebProvider>
         
       </body>
     </html>
